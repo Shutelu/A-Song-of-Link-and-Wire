@@ -23,12 +23,15 @@ def liste_liens(page) -> list:
         class_a = a.get('class')
         forbidden_class = ['image','image-thumbnail']
 
-        #exclude forbidden class and alias
+        #exclude forbidden class
         # if not a.get('class') or (len(a.get('class')) > 0 and a.get('class')[0] not in ['image','image-thumbnail']):#old
         if not class_a or (len(class_a) > 0 and class_a[0] not in forbidden_class) or (len(class_a) > 1 and class_a[1] not in forbidden_class):#new
 
-            if not a.get('href').startswith('#'):
-                links_from_div.append(a.get('href'))
+            #exlude 'a' startswith '#' or 'https'
+            if not a.get('href').startswith('#') and not a.get('href').startswith('https') and not a.get('href').startswith('http') and not ":" in a.get('href'):
+                link_not_wiki = a.get('href').replace("/wiki/",'')
+                # print("enelever :" + link_not_wiki)
+                links_from_div.append(link_not_wiki)
                 # print(a.get('href'))
 
     return links_from_div
@@ -49,7 +52,7 @@ def svg_dico(dico, file) -> None:
 
 #Question 3 
 #use the file to creation a new dico
-def chg_dico(file):
+def chg_dico(file) -> dict:
     newdico = {}
     with open(file, 'r') as f:
         for line in f:
@@ -60,12 +63,48 @@ def chg_dico(file):
             newdico[key] = value
     return newdico
 
+#Question 4
+def graph_path(): 
+    file_name = "f1.txt"
+    links_visited = []
+    links_to_visite = ['Petyr_Baelish']
+
+    #we visite links until there is nothing left
+    while links_to_visite :
+
+        first_elem = links_to_visite.pop(0) # recover the first element 
+
+        if first_elem in links_visited: # we leave if it's already visited
+            continue 
+
+        with open('test.txt','a') as f:
+
+            links_visited.append(first_elem)
+            f.write(f"first element {first_elem} \n")
+            f.write(f"to visite {links_to_visite} \n")
+            f.write(f"visited {links_visited}\n")
+            links = liste_liens(first_elem)
+            f.write(f"all : {first_elem}:{links}\n")
+            f.write("\n")
+        # links_visited.append(first_elem)
+        # links = liste_liens(first_elem)
+        svg_dico({first_elem:links},file_name) #write into the file
+        for link in links:
+            # if link in links_visited:
+            #     continue
+            links_to_visite.append(link)
+        
+
+
 #test Q1
-liste_liens("Petyr_Baelish") #test
-# # test Q2
+# liste_liens("Petyr_Baelish") #test
+# test Q2
 # svg_dico({
 #     "Petyr_Baelish": liste_liens("Petyr_Baelish")
 # },"f1.txt")
 #test Q3
-testdico = chg_dico("f1.txt")
-print(testdico)
+# testdico = chg_dico("f1.txt")
+#test Q4
+graph_path()
+# print(liste_liens("House_Frey"))# test
+
