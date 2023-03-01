@@ -28,7 +28,9 @@ def liste_liens(page) -> list:
         if not class_a or (len(class_a) > 0 and class_a[0] not in forbidden_class) or (len(class_a) > 1 and class_a[1] not in forbidden_class):#new
 
             if not a.get('href').startswith('#'):
-                links_from_div.append(a.get('href'))
+                link_not_wiki = a.get('href').replace("/wiki/",'')
+                # print("enelever :" + link_not_wiki)
+                links_from_div.append(link_not_wiki)
                 # print(a.get('href'))
 
     return links_from_div
@@ -49,7 +51,7 @@ def svg_dico(dico, file) -> None:
 
 #Question 3 
 #use the file to creation a new dico
-def chg_dico(file):
+def chg_dico(file) -> dict:
     newdico = {}
     with open(file, 'r') as f:
         for line in f:
@@ -60,12 +62,17 @@ def chg_dico(file):
             newdico[key] = value
     return newdico
 
+#Question 4
+def graph_path(): 
+    pass
+
+
 #test Q1
 liste_liens("Petyr_Baelish") #test
-# # test Q2
-# svg_dico({
-#     "Petyr_Baelish": liste_liens("Petyr_Baelish")
-# },"f1.txt")
+# test Q2
+svg_dico({
+    "Petyr_Baelish": liste_liens("Petyr_Baelish")
+},"f1.txt")
 #test Q3
 testdico = chg_dico("f1.txt")
-print(testdico)
+
