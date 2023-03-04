@@ -44,19 +44,27 @@ def svg_dico(dico, file) -> None:
 #use the file to creation a new dico
 def chg_dico(file) -> dict:
     newdico = {}#dico to return 
+    
     with open(file, 'r') as f:#only read 
         #for each line, add it to dico if exist
         for line in f:
             line = line.strip()#remove escape
+
             if not line:
                 continue  # ignore empty lines
-            key, value = line.split(':', 1)#split from ':' 1 time
-            newdico[key] = value
+
+            key, value = line.split(':', 1)#split from ':' 1 time and recover in 2 var
+
+            #before add the key and value, transform value into list 
+            value_no_bracket = value.replace("[","").replace("]","").replace("'","") #remove '[' and ']' and " ' "
+            value_splited = value_no_bracket.split(",") #transform to list
+            newdico[key] = value_splited
+
     return newdico
 
 #Question 4
 def graph_path(): 
-    file_name = "f2.txt"
+    file_name = "f1.txt"
     links_visited = []
     links_to_visite = ['Petyr_Baelish']
 
@@ -81,22 +89,35 @@ def graph_path():
         links_visited.append(first_elem)
         links = liste_liens(first_elem)
         svg_dico({first_elem:links},file_name) #write into the file
+        
         for link in links:
             # if link in links_visited:
             #     continue
             links_to_visite.append(link)
         
+#Question 5
+def plus_court_chemin(file, start, end):
+    with open(file,"r") as f:
+        
+        pass
 
+#==============#
+#=====TEST=====#
+#==============#
 
 #test Q1
-# liste_liens("Petyr_Baelish") #test
+# print(liste_liens("Petyr_Baelish")[0]) #test
+
 # test Q2
 # svg_dico({
 #     "Petyr_Baelish": liste_liens("Petyr_Baelish")
 # },"f1.txt")
+
 #test Q3
-# testdico = chg_dico("f1.txt")
+testdico = chg_dico("test.txt")
+# print(testdico)
+
 #test Q4
-graph_path()
+# graph_path()
 
 
