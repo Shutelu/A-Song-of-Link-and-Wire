@@ -5,28 +5,28 @@ import requests
 #return all the links of the page in a list
 def liste_liens(page) -> list:
 
-    adresse = requests.get("https://iceandfire.fandom.com/wiki/" + page)
-    soup = BeautifulSoup(adresse.text, 'html.parser')
-    links_from_div = [] #list to return
+    adress = requests.get("https://iceandfire.fandom.com/wiki/" + page)
+    soup = BeautifulSoup(adress.text, 'html.parser')
+    links_to_return = []
 
-    #search the main information zone
+    #search links in the main div
     main_div_to_research = soup.find('div', class_="mw-parser-output")
 
-    #test if we can add the link a in our list links_from_div
+    #add the link 'a' in our list 
     for a in main_div_to_research.find_all('a'):#find_all return a list
 
         a_class = a.get('class')
         forbidden_class = ['image','image-thumbnail']
 
-        #autorize link without class and exlude forbidden class
+        #autorize links without class and exclude links that has a class in forbidden_class
         if (not a_class) or (len(a_class) > 0 and a_class[0] not in forbidden_class) or (len(a_class) > 1 and a_class[1] not in forbidden_class):
 
-            #exlude links starting with '#' or 'https:'/'http:' or ':'
+            #exlude links starting with '#' (anchor) and 'https:' or 'http:' or links with ':' (other website redirection)
             if (not a.get('href').startswith('#') and not ":" in a.get('href')):
-                link_not_wiki = a.get('href').replace("/wiki/",'')#remove the '/wiki/' before the link
-                links_from_div.append(link_not_wiki)
+                link_without_wiki = a.get('href').replace("/wiki/",'')#remove the '/wiki/' before the link
+                links_to_return.append(link_without_wiki)
 
-    return links_from_div
+    return links_to_return
 
 #Question 2:
 #save a dico into the file
@@ -44,11 +44,11 @@ def svg_dico(dico, file) -> None:
 #use the file to creation a new dico
 def chg_dico(file) -> dict:
     newdico = {}#dico to return 
-    
+
     with open(file, 'r') as f:#only read 
         #for each line, add it to dico if exist
         for line in f:
-            line = line.strip()#remove escape
+            line = line.strip()#remove first/last space and "\n"
 
             if not line:
                 continue  # ignore empty lines
@@ -56,14 +56,14 @@ def chg_dico(file) -> dict:
             key, value = line.split(':', 1)#split from ':' 1 time and recover in 2 var
 
             #before add the key and value, transform value into list 
-            value_no_bracket = value.replace("[","").replace("]","").replace("'","") #remove '[' and ']' and " ' "
+            value_no_bracket = value.replace("[","").replace("]","").replace("'","").replace(" ","") #remove '[' and ']' and " ' " and space
             value_splited = value_no_bracket.split(",") #transform to list
             newdico[key] = value_splited
 
     return newdico
 
 #Question 4
-def graph_path(): 
+def graph_path() -> None: 
     file_name = "f1.txt"
     links_visited = []
     links_to_visite = ['Petyr_Baelish']
@@ -98,15 +98,24 @@ def graph_path():
 #Question 5
 def plus_court_chemin(file, start, end):
     with open(file,"r") as f:
-        
-        pass
+        #on reccupere les donnees dans un dictionnaire
+        dico = chg_dico(file)
 
-#==============#
-#=====TEST=====#
-#==============#
+        page_to_visit = [start]
+        visited = {start:0} #cle = page name, value = distance 
+
+        while page_to_visit:
+            current_page = page_to_visit.pop(0)
+
+            
+        
+
+#==================================#
+#===============TEST===============#
+#==================================#
 
 #test Q1
-# print(liste_liens("Petyr_Baelish")[0]) #test
+print(liste_liens("Petyr_Baelish")) #test
 
 # test Q2
 # svg_dico({
@@ -114,10 +123,37 @@ def plus_court_chemin(file, start, end):
 # },"f1.txt")
 
 #test Q3
-testdico = chg_dico("test.txt")
+# testdico = chg_dico("f2.txt")
 # print(testdico)
+# print(testdico['Aenys_I'])
 
 #test Q4
 # graph_path()
 
 
+
+
+#Q3 alternative research
+# str = "Aegonfort,Dragonstone,King_of_the_Andals,_the_Rhoynar,_and_the_First_Men,Lord_of_the_Seven_Kingdoms"
+# l = []
+# mot = ""
+# for i in str:
+#     if not ("," in str):
+#         break
+#     firstocc = str.find(",")
+#     if str[firstocc+1] == "_":
+#         mot += str[:firstocc+1]
+#         str = str[firstocc+1:]
+#     else :
+#         if len(mot) > 0:
+#             mot += str[:firstocc]
+#         else:
+#             mot = str[:firstocc]
+#         l.append(mot)
+#         mot = ""
+#         str = str[firstocc+1:]
+#         print(mot)
+#     print("apres traitement : ",str)
+# if str:
+#     l.append(str)
+# print(l)
