@@ -29,7 +29,7 @@ def liste_liens(page) -> list:
     return links_to_return
 
 #Question 2:
-#save a dictionaire into a file
+#save a dictionary into a file
 def svg_dico(dico, file) -> None:
 
     with open(file, "a") as f:#auto close syntax, create if not exist or append 
@@ -96,6 +96,7 @@ def chg_dico(file) -> dict:
     return dico_to_return
 
 #Question 4
+#add all links into a file with svg_dico
 def graph_path() -> None: 
     file_name = "f1.txt"
     links_visited = []
@@ -103,29 +104,16 @@ def graph_path() -> None:
 
     #we visite links until there is nothing left
     while links_to_visite :
-
         first_elem = links_to_visite.pop(0) # recover the first element 
 
         if first_elem in links_visited: # we leave if it's already visited
             continue 
-
-        #test
-        # with open('test.txt','a') as f:
-        #     links_visited.append(first_elem)
-        #     f.write(f"first element {first_elem} \n")
-        #     f.write(f"to visite {links_to_visite} \n")
-        #     f.write(f"visited {links_visited}\n")
-        #     links = liste_liens(first_elem)
-        #     f.write(f"all : {first_elem}:{links}\n")
-        #     f.write("\n")
 
         links_visited.append(first_elem)
         links = liste_liens(first_elem)
         svg_dico({first_elem:links},file_name) #write into the file
         
         for link in links:
-            # if link in links_visited:
-            #     continue
             links_to_visite.append(link)
         
 #Question 5

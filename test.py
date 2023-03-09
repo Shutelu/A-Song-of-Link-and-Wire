@@ -58,8 +58,8 @@ def chg_dico(file) -> dict:
 
 
 
-newdico = chg_dico("f1.txt")
-print(newdico["Historical_Timeline#After_Aegon's_Landing"])
+newdico = chg_dico("test.txt")
+print(newdico)
 #test Q3
 # testdico = chg_dico("test.txt")
 # print(testdico)
