@@ -104,7 +104,7 @@ def graph_path() -> None:
 
     #we visite links until there is nothing left
     while links_to_visite :
-        first_elem = links_to_visite.pop(0) # recover the first element 
+        first_elem = links_to_visite.pop(0) # get the first element 
 
         if first_elem in links_visited: # we leave if it's already visited
             continue 
@@ -117,16 +117,43 @@ def graph_path() -> None:
             links_to_visite.append(link)
         
 #Question 5
-def plus_court_chemin(file, start, end):
-    with open(file,"r") as f:
-        #on reccupere les donnees dans un dictionnaire
-        dico = chg_dico(file)
+#find the shortest way from A to B
+def plus_court_chemin(graph, start, end):
 
-        page_to_visit = [start]
-        visited = {start:0} #cle = page name, value = distance 
+    node_to_visite = [start]
+    distances = {start: 0} # store visited nodes and their distances from 'start'
+    parent = {start: None} # store nodes' parent to recover the shortest way
+    
+    while node_to_visite:
+        node = node_to_visite.pop(0) # get the first element 
 
-        while page_to_visit:
-            current_page = page_to_visit.pop(0)
+        if len(graph.get(node, [])) == 0: # if empty node, the links doesn't have any values
+            continue
+
+        if node == end: # if we find the 'end' node
+            chemin = []
+
+            while node: # stop until node start which has a parent = None
+                chemin.append(node)
+                node = parent[node]
+
+            chemin.reverse() # put 'chemin' in right order
+            return chemin
+
+        #search the values from the key 'node'
+        for voisin in graph[node]:
+            #if not already visited
+            if voisin not in distances:
+                distances[voisin] = distances[node] + 1 # new key 'voisin'
+                parent[voisin] = node
+                node_to_visite.append(voisin)
+    
+    return None
+
+# test = chg_dico("f1.txt")
+
+# chemin = plus_court_chemin(test,"Dorne", "Rhaego")
+# print(chemin)
 
             
         
@@ -136,7 +163,7 @@ def plus_court_chemin(file, start, end):
 #==================================#
 
 #test Q1
-print(liste_liens("Petyr_Baelish")) #test
+# print(liste_liens("Petyr_Baelish")) #test
 
 # test Q2
 # svg_dico({
@@ -154,7 +181,7 @@ print(liste_liens("Petyr_Baelish")) #test
 
 
 
-#Q3 alternative research
+#Q3 alternative research O(n^2)
 # str = "Aegonfort,Dragonstone,King_of_the_Andals,_the_Rhoynar,_and_the_First_Men,Lord_of_the_Seven_Kingdoms"
 # l = []
 # mot = ""
