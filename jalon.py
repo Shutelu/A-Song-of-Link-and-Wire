@@ -150,10 +150,7 @@ def plus_court_chemin(graph, start, end):
     
     return None
 
-# test = chg_dico("f1.txt")
 
-# chemin = plus_court_chemin(test,"Dorne", "Rhaego")
-# print(chemin)
 
             
         
@@ -177,6 +174,12 @@ def plus_court_chemin(graph, start, end):
 
 #test Q4
 # graph_path()
+
+#test Q5
+# test = chg_dico("f1.txt")
+
+# chemin = plus_court_chemin(test,"Dorne", "Rhaego")
+# print(chemin)
 
 
 
