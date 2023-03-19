@@ -50,8 +50,6 @@ def chg_dico(file) -> dict:
         #for each line, add it to dico if exist
         for line in f:
 
-            liste = []
-            mot = ""
             line = line.strip()#remove escape from start and end if exist
 
             if not line: # ignore empty lines
@@ -59,38 +57,10 @@ def chg_dico(file) -> dict:
 
             key, value = line.split(':', 1)#split from ':' 1 time and recover in 2 var
 
-            #before add the key and value, transform value into list 
-            value_no_bracket = value.replace("[","").replace("]","").replace(" ","") #remove '[' and ']' and " ' "
-
-            #extract the single quote from " text's ", the order in the list might change but it's not a big deal
-            #time one
-            while "\"" in value_no_bracket: #search ' " '
-                tmp_value = value_no_bracket #store default
-                first_quotes = value_no_bracket.find("\"")
-                value_no_bracket = value_no_bracket[first_quotes+1:]
-                second_quotes = value_no_bracket.find("\"")
-                value_no_bracket = value_no_bracket[second_quotes+1+1:]#another +1 for the ' " ' we removed in firstquote,tatonement
-                #extracting
-                liste.append(tmp_value[first_quotes+1:second_quotes+1])
-
-            value_no_bracket = value_no_bracket.replace("'","")
-
-            #add every word spliting from "," to the list
-            for index, char in enumerate(value_no_bracket):
-                if char == ",":
-                    #-1 for 0 and -1 for current
-                    if index < len(value_no_bracket)-2 and value_no_bracket[index:index+2] == ",_":
-                        mot += char
-                    else:
-                        liste.append(mot)
-                        mot = ""
-                else:
-                    mot += char
-
-            # add last word 
-            if mot:
-                liste.append(mot)
-        
+            #replacement
+            value_no_bracket = value.replace("[","").replace("]","").replace("'","").replace("\"","") #remove '[' and ']' and " ' "
+            liste = value_no_bracket.split(", ")
+            
             dico_to_return[key] = liste
 
     return dico_to_return
@@ -176,10 +146,10 @@ def plus_court_chemin(graph, start, end):
 # graph_path()
 
 #test Q5
-# test = chg_dico("f1.txt")
+test = chg_dico("f1.txt")
 
-# chemin = plus_court_chemin(test,"Dorne", "Rhaego")
-# print(chemin)
+chemin = plus_court_chemin(test,"Dorne", "Rhaego")
+print(chemin)
 
 
 
