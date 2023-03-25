@@ -1,6 +1,10 @@
 from bs4 import BeautifulSoup
 import requests
 
+#==================================#
+#=========LISTER LES LIENS=========#
+#==================================#
+
 #Question 1:
 #return all the links of the page in a list
 def liste_liens(page) -> list:
@@ -28,6 +32,10 @@ def liste_liens(page) -> list:
 
     return links_to_return
 
+#==================================#
+#======CONSTRUCTION DU GRAPHE======#
+#==================================#
+
 #Question 2:
 #save a dictionary into a file
 def svg_dico(dico, file) -> None:
@@ -41,7 +49,7 @@ def svg_dico(dico, file) -> None:
             f.write("Empty dictionary\n")
 
 #Question 3 
-#use the file to creation a new dictionary and return it
+#use the file to create a new dictionary and return it
 def chg_dico(file) -> dict:
     dico_to_return = {}
 
@@ -86,8 +94,12 @@ def graph_path() -> None:
         for link in links:
             links_to_visite.append(link)
         
+#=============================================#
+#=VARIATION SUR LE THEME DU PLUS COURS CHEMIN=#
+#=============================================#
+
 #Question 5
-#find the shortest way from A to B
+#find the shortest way from A to B, graph = dictonary
 def plus_court_chemin(graph, start, end):
 
     node_to_visite = [start]
@@ -100,7 +112,8 @@ def plus_court_chemin(graph, start, end):
         if len(graph.get(node, [])) == 0: # if empty node, the links doesn't have any values
             continue
 
-        if node == end: # if we find the 'end' node
+        # if we find the 'end' node
+        if node == end: 
             chemin = []
 
             while node: # stop until node start which has a parent = None
@@ -118,7 +131,7 @@ def plus_court_chemin(graph, start, end):
                 parent[voisin] = node
                 node_to_visite.append(voisin)
     
-    return None
+    return None # there is no path 
 
 
 
