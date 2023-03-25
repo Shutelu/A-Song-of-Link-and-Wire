@@ -98,22 +98,18 @@ def graph_path() -> None:
 #=VARIATION SUR LE THEME DU PLUS COURS CHEMIN=#
 #=============================================#
 
-#Question 5
+#Question 5 : distance ne sert a rien a enlever
 #find the shortest way from A to B, graph = dictonary
-def plus_court_chemin(graph, start, end):
+def plus_court_chemin(graph, source, target) -> list:
 
-    node_to_visite = [start]
-    distances = {start: 0} # store visited nodes and their distances from 'start'
-    parent = {start: None} # store nodes' parent to recover the shortest way
+    nodes_to_visite = [source]
+    parent = {source: None} # store nodes' parent to recover the shortest way
     
-    while node_to_visite:
-        node = node_to_visite.pop(0) # get the first element 
-
-        if len(graph.get(node, [])) == 0: # if empty node, the links doesn't have any values
-            continue
+    while nodes_to_visite:
+        node = nodes_to_visite.pop(0) # get the first element 
 
         # if we find the 'end' node
-        if node == end: 
+        if node == target: 
             chemin = []
 
             while node: # stop until node start which has a parent = None
@@ -123,17 +119,67 @@ def plus_court_chemin(graph, start, end):
             chemin.reverse() # put 'chemin' in right order
             return chemin
 
+        if len(graph.get(node, [])) == 0: # if empty node, the links doesn't have any values
+            continue
+
         #search the values from the key 'node'
         for voisin in graph[node]:
             #if not already visited
-            if voisin not in distances:
-                distances[voisin] = distances[node] + 1 # new key 'voisin'
+            if voisin not in parent:
                 parent[voisin] = node
-                node_to_visite.append(voisin)
+                nodes_to_visite.append(voisin)
     
     return None # there is no path 
 
+#Question 6
+#cherche le chemin de pois minimal
+def pcc_voyelles(graph, source, target) -> list:
 
+    nodes_to_visite = [source]
+    nodes_weight = {source: 0}
+    parent = {source: None}
+    min_path_to_return = []
+
+    #we stop until nodes_to_visite is empty to find the shortest path
+    #this 'while' loop will setup the optimal way to find the target 
+    while nodes_to_visite:
+        node = nodes_to_visite.pop()
+
+        if (len(graph.get(node, [])) == 0) or (node == target): # empty node or target node we can continue
+            continue
+        
+        #define the weight of each nodes
+        for neighbour in graph[node]:
+
+            cost = nodes_weight[node] + len(neighbour) + nb_voyelles(neighbour)
+
+            #if the neighbour already has a weight we can compare
+            if neighbour in nodes_weight:
+                # cost > n
+                if cost > nodes_weight[neighbour]:
+                    continue
+                
+            # cost < n or not in distances
+            if neighbour not in nodes_to_visite:
+                nodes_to_visite.append(neighbour) #add to the parcours
+            nodes_weight[neighbour] = cost # add the distance
+            parent[neighbour] = node
+
+    #set our path from source to target with the min weight
+    while target is not None:
+        min_path_to_return.append(target)
+        target = parent[target]
+    min_path_to_return.reverse()
+  
+    return min_path_to_return
+
+#Q6 private method : return the number of vowels of n
+def nb_voyelles(n):
+    nb = 0
+    for v in n:
+        if v in 'aeiouyAEIOUY':
+            nb += 1
+    return nb
 
             
         
@@ -159,10 +205,14 @@ def plus_court_chemin(graph, start, end):
 # graph_path()
 
 #test Q5
-test = chg_dico("f1.txt")
+# test = chg_dico("f1.txt")
+# chemin = plus_court_chemin(test,"Dorne", "Rhaego")
+# print(chemin)
 
-chemin = plus_court_chemin(test,"Dorne", "Rhaego")
-print(chemin)
+#test Q6
+dico = chg_dico("f1.txt")
+path = pcc_voyelles(dico, "Dorne", "Rhaego")
+print(path)
 
 
 
