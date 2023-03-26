@@ -98,7 +98,7 @@ def graph_path() -> None:
 #=VARIATION SUR LE THEME DU PLUS COURS CHEMIN=#
 #=============================================#
 
-#Question 5 : distance ne sert a rien a enlever
+#Question 5 : 
 #find the shortest way from A to B, graph = dictonary
 def plus_court_chemin(graph, source, target) -> list:
 
@@ -174,15 +174,76 @@ def pcc_voyelles(graph, source, target) -> list:
     return min_path_to_return
 
 #Q6 private method : return the number of vowels of n
-def nb_voyelles(n):
+def nb_voyelles(n) -> int:
     nb = 0
     for v in n:
         if v in 'aeiouyAEIOUY':
             nb += 1
     return nb
 
-            
+#Question 7
+#we're going to look for all the characters form Category:Characters page to create our graph
+def graph_of_characters() -> None:
+
+    list_of_dico = []
+    list_of_characters = getListOfCharacters()
+
+    #for every characters in our list
+    for char in list_of_characters:
+        list_of_dico.append(getDicoFromCharacter(char))
+    
+    #write into files
+    with open("characters_list.txt", "a") as f:
         
+        #write for every element of the list 
+        for dico in list_of_dico:
+            f.write(f"{dico['name']}:'siblings':{dico['siblings']}, 'fmc':{dico['fmc']}, 'love':{dico['love']}\n")
+
+
+#Q7 private method : search the all characters in category and return the list of all the characters
+def getListOfCharacters() -> list:
+    alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+    list_of_characters = [] 
+
+    for alp in alphabet:
+        adress = requests.get("https://iceandfire.fandom.com/wiki/Category:Characters?from=" + alp)
+        soup = BeautifulSoup(adress.text, 'html.parser')
+
+        #add to the dictonary
+        for a in soup.find_all('a',class_="category-page__member-link"):
+            key = a.get('href').replace("/wiki/",'')
+            list_of_characters.append(key)
+
+    return list_of_characters
+
+#Q7 private method
+def getDicoFromCharacter(character) -> dict:
+    adress = requests.get("https://iceandfire.fandom.com/wiki/" + character)
+    soup = BeautifulSoup(adress.text, 'html.parser')
+
+    dico_to_return = {
+        'name': character,
+        'siblings': [],
+        'fmc': [],#parent/child
+        'love': []
+    }
+
+    dico_to_return['siblings'] = getRelationAsList(soup, ['siblings'])
+    dico_to_return['fmc'] = getRelationAsList(soup, ['father', 'mother', 'children'])
+    dico_to_return['love'] = getRelationAsList(soup, ['spouse', 'lover'])
+    
+    return dico_to_return
+
+#Q7 private method : return relationship as a list  
+def getRelationAsList(soup, source:list) -> list:
+    list_to_return = []
+    for s in source:
+        search = soup.find('div',{'data-source':s})
+        if search is not None:# so there's at least a link
+            search = search.find_all('a')
+            for src in search:
+                list_to_return.append(src.get('href').replace('/wiki/',''))
+    return list_to_return
 
 #==================================#
 #===============TEST===============#
@@ -210,34 +271,9 @@ def nb_voyelles(n):
 # print(chemin)
 
 #test Q6
-dico = chg_dico("f1.txt")
-path = pcc_voyelles(dico, "Dorne", "Rhaego")
-print(path)
+# dico = chg_dico("f1.txt")
+# path = pcc_voyelles(dico, "Dorne", "Rhaego")
+# print(path)
 
-
-
-
-#Q3 alternative research O(n^2)
-# str = "Aegonfort,Dragonstone,King_of_the_Andals,_the_Rhoynar,_and_the_First_Men,Lord_of_the_Seven_Kingdoms"
-# l = []
-# mot = ""
-# for i in str:
-#     if not ("," in str):
-#         break
-#     firstocc = str.find(",")
-#     if str[firstocc+1] == "_":
-#         mot += str[:firstocc+1]
-#         str = str[firstocc+1:]
-#     else :
-#         if len(mot) > 0:
-#             mot += str[:firstocc]
-#         else:
-#             mot = str[:firstocc]
-#         l.append(mot)
-#         mot = ""
-#         str = str[firstocc+1:]
-#         print(mot)
-#     print("apres traitement : ",str)
-# if str:
-#     l.append(str)
-# print(l)
+#test Q7
+graph_of_characters()
