@@ -181,8 +181,12 @@ def nb_voyelles(n) -> int:
             nb += 1
     return nb
 
+#================================#
+#=====INCESTE ET DESCENDANCE=====#
+#================================#
+
 #Question 7
-#we're going to look for all the characters form Category:Characters page to create our graph
+#we're going to look for all the characters form Category:Characters page to create our graph and put into a file named characters_list
 def graph_of_characters() -> None:
 
     list_of_dico = []
@@ -197,8 +201,7 @@ def graph_of_characters() -> None:
         
         #write for every element of the list 
         for dico in list_of_dico:
-            f.write(f"{dico['name']}:'siblings':{dico['siblings']}, 'fmc':{dico['fmc']}, 'love':{dico['love']}\n")
-
+            f.write(f"{dico['name']}:'siblings':{dico['siblings']}| 'fmc':{dico['fmc']}| 'love':{dico['love']}\n")
 
 #Q7 private method : search the all characters in category and return the list of all the characters
 def getListOfCharacters() -> list:
@@ -216,7 +219,7 @@ def getListOfCharacters() -> list:
 
     return list_of_characters
 
-#Q7 private method
+#Q7 private method : return a dictionary with all the relation of the character
 def getDicoFromCharacter(character) -> dict:
     adress = requests.get("https://iceandfire.fandom.com/wiki/" + character)
     soup = BeautifulSoup(adress.text, 'html.parser')
@@ -244,6 +247,62 @@ def getRelationAsList(soup, source:list) -> list:
             for src in search:
                 list_to_return.append(src.get('href').replace('/wiki/',''))
     return list_to_return
+
+#Question 8
+#We print the list of incestuous couples
+def incestuousCouple(file):
+    list_of_couple = []
+
+    with open(file, 'r') as f:
+
+        for line in f:
+
+            line = line.strip()#remove escape from start and end if exist
+            if not line: # ignore empty lines
+                continue  
+
+            key, value = line.split(':', 1)#split from ':' 1 time and recover in 2 var
+
+            siblings = []
+            fmc = [] #parent/children
+            love = [] #spouse/lover
+            # print("1- ligne : ", line)
+            #split the info
+            splited_value = value.replace("'","").split("| ")
+            # print("2 - splited value : ",splited_value)
+            
+            #process the info
+            for info in splited_value:
+                # print("3 - info : ", info)
+                info_key, info_value = info.split(':',1)
+
+                processed_info_value = info_value.replace('[','').replace(']','')
+                if len(processed_info_value) < 1:
+                    continue
+                if info_key == 'siblings':
+                    siblings = processed_info_value.split(", ")
+                if info_key == 'fmc':
+                    fmc = processed_info_value.split(", ")
+                if info_key == 'love':
+                    love = processed_info_value.split(", ")
+
+            #check the relation
+            for sib in siblings:
+                if sib in love:
+                    list_of_couple.append((key,sib))
+            for f in fmc:
+                if f in love:
+                    list_of_couple.append((key,f))
+
+            # print("ligne : ", line)
+
+    with open("list_of_couple.txt","a") as f:
+
+        for i in list_of_couple:
+            print(i)
+            f.write(f"{i}\n")
+
+
 
 #==================================#
 #===============TEST===============#
@@ -276,4 +335,7 @@ def getRelationAsList(soup, source:list) -> list:
 # print(path)
 
 #test Q7
-graph_of_characters()
+# graph_of_characters()
+
+#test Q8
+incestuousCouple('characters_list.txt')
