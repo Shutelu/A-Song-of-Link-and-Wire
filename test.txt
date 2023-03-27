@@ -1,4 +1,0 @@
-Aenys_I:['Aegonfort', 'Dragonstone', 'King_of_the_Andals,_the_Rhoynar,_and_the_First_Men', 'Lord_of_the_Seven_Kingdoms']
-Stannis_Baratheon:["Historical_Timeline#After_Aegon's_Landing", "Storm%27s_End", 'Knighthood', 'Dragonstone']
-Sweetsister:[]
-Viserys_I_Targaryen:['Red_Keep', 'Red_Keep', 'King_of_the_Andals,_the_Rhoynar,_and_the_First_Men', 'Dance_of_Dragons']

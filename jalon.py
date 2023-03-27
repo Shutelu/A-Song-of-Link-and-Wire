@@ -34,7 +34,9 @@ def liste_liens(page) -> list:
             if (not a.get('href').startswith('#') and not ":" in a.get('href')):
 
                 link_without_wiki = a.get('href').replace("/wiki/",'')#remove the '/wiki/' before the link
-                links_to_return.append(link_without_wiki)
+
+                if link_without_wiki not in links_to_return:
+                    links_to_return.append(link_without_wiki)
 
     return links_to_return
 
@@ -94,24 +96,29 @@ def chg_dico(file) -> dict:
     return dico_to_return
 
 #Question 4
-#add all links into a file with svg_dico
+#Desr : create a representation of the wiki in form of key:value into a file with svg_dico()
 def graph_path() -> None: 
-    file_name = "f1.txt"
+
+    file_name = "wiki_representation.txt"
     links_visited = []
     links_to_visite = ['Petyr_Baelish']
 
-    #we visite links until there is nothing left
+    #visite links until there is nothing left
     while links_to_visite :
-        first_elem = links_to_visite.pop(0) # get the first element 
 
-        if first_elem in links_visited: # we leave if it's already visited
+        # get the first element 
+        page = links_to_visite.pop(0)
+
+        #leave if already visited
+        if page in links_visited: 
             continue 
 
-        links_visited.append(first_elem)
-        links = liste_liens(first_elem)
-        svg_dico({first_elem:links},file_name) #write into the file
+        links_visited.append(page)
+        list_of_links = liste_liens(page)
+        svg_dico({page:list_of_links}, file_name)
         
-        for link in links:
+        #adding all links of the page to our parcours
+        for link in list_of_links:
             links_to_visite.append(link)
         
 #=============================================#
@@ -206,7 +213,7 @@ def nb_voyelles(n) -> int:
 #================================#
 
 #Question 7
-#we're going to look for all the characters form Category:Characters page to create our graph and put into a file named characters_list
+#Desc : look for all the characters from Category:Characters page to create our graph and put into a file named characters_list.txt
 def graph_of_characters() -> None:
 
     list_of_dico = []
@@ -216,61 +223,80 @@ def graph_of_characters() -> None:
     for char in list_of_characters:
         list_of_dico.append(getDicoFromCharacter(char))
     
-    #write into files
-    with open("characters_list.txt", "a") as f:
+    #write the characters list into the file
+    with open("characters_list.txt", "w") as f:
         
         #write for every element of the list 
         for dico in list_of_dico:
+
             #sibling -> sibling
             #fmc -> [parent],[children]
             #love -> spouse/lover
+            #the attributs is separated with '| ' for better processing
+
             f.write(f"{dico['name']}:'siblings':{dico['siblings']}| 'fmc':{dico['fmc']}| 'love':{dico['love']}\n")
 
-#Q7 private method : search the all characters in category and return the list of all the characters
+#Q7
+#Desc : search all characters of the wiki and return it in a list
 def getListOfCharacters() -> list:
+
     alphabet = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
     list_of_characters = [] 
 
     for alp in alphabet:
+
         adress = requests.get("https://iceandfire.fandom.com/wiki/Category:Characters?from=" + alp)
         soup = BeautifulSoup(adress.text, 'html.parser')
 
-        #add to the dictonary
+        #adding all names of the character starting with 'alp' in list_of_characters
         for a in soup.find_all('a',class_="category-page__member-link"):
+
             key = a.get('href').replace("/wiki/",'')
             list_of_characters.append(key)
 
     return list_of_characters
 
-#Q7 private method : return a dictionary with all the relation of the character
+#Q7
+#Desc : return a dictionary with all the relation of the character
+#the form of the relation with be {'siblings':[siblings,..], 'fmc':[[parent,..],[children,..]], 'love:[spouse/lover,..]}
+#Args : character = character's name
 def getDicoFromCharacter(character) -> dict:
+
     adress = requests.get("https://iceandfire.fandom.com/wiki/" + character)
     soup = BeautifulSoup(adress.text, 'html.parser')
 
     dico_to_return = {
         'name': character,
         'siblings': [],
-        'fmc': [],#parent/child
-        'love': []
+        'fmc': [], # parent/children
+        'love': [] # spouse/lover
     }
 
     dico_to_return['siblings'] = getRelationAsList(soup, ['siblings'])
-    # dico_to_return['fmc'] = getRelationAsList(soup, ['father', 'mother', 'children'])
     dico_to_return['fmc'].append(getRelationAsList(soup, ['father', 'mother']))
     dico_to_return['fmc'].append(getRelationAsList(soup, ['children']))
     dico_to_return['love'] = getRelationAsList(soup, ['spouse', 'lover'])
     
     return dico_to_return
 
-#Q7 private method : return relationship as a list  
+#Q7 
+#Desc : return relationship as a list  
+#Args : soup = html source to search, source = list of data-source to search
 def getRelationAsList(soup, source:list) -> list:
+
     list_to_return = []
+
     for s in source:
+
         search = soup.find('div',{'data-source':s})
+
         if search is not None:# so there's at least a link
+
             search = search.find_all('a')
+
             for src in search:
                 list_to_return.append(src.get('href').replace('/wiki/',''))
+
     return list_to_return
 
 #Question 8
