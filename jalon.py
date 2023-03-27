@@ -201,6 +201,9 @@ def graph_of_characters() -> None:
         
         #write for every element of the list 
         for dico in list_of_dico:
+            #sibling -> sibling
+            #fmc -> [parent],[children]
+            #love -> spouse/lover
             f.write(f"{dico['name']}:'siblings':{dico['siblings']}| 'fmc':{dico['fmc']}| 'love':{dico['love']}\n")
 
 #Q7 private method : search the all characters in category and return the list of all the characters
@@ -232,7 +235,9 @@ def getDicoFromCharacter(character) -> dict:
     }
 
     dico_to_return['siblings'] = getRelationAsList(soup, ['siblings'])
-    dico_to_return['fmc'] = getRelationAsList(soup, ['father', 'mother', 'children'])
+    # dico_to_return['fmc'] = getRelationAsList(soup, ['father', 'mother', 'children'])
+    dico_to_return['fmc'].append(getRelationAsList(soup, ['father', 'mother']))
+    dico_to_return['fmc'].append(getRelationAsList(soup, ['children']))
     dico_to_return['love'] = getRelationAsList(soup, ['spouse', 'lover'])
     
     return dico_to_return
@@ -249,7 +254,7 @@ def getRelationAsList(soup, source:list) -> list:
     return list_to_return
 
 #Question 8
-#We print the list of incestuous couples
+#We print the list of incestuous couples + list_of_couple file
 def incestuousCouple(file):
     list_of_couple = []
 
@@ -264,19 +269,22 @@ def incestuousCouple(file):
             key, value = line.split(':', 1)#split from ':' 1 time and recover in 2 var
 
             siblings = []
-            fmc = [] #parent/children
+            fmc = [] #[parent], [children]
             love = [] #spouse/lover
-            # print("1- ligne : ", line)
-            #split the info
+
+            #acquire the info
             splited_value = value.replace("'","").split("| ")
-            # print("2 - splited value : ",splited_value)
             
             #process the info
             for info in splited_value:
-                # print("3 - info : ", info)
+
+                #obtaining the key and value of info
                 info_key, info_value = info.split(':',1)
 
+                print("1-info value:", info_value)
+                print("key :",info_key)
                 processed_info_value = info_value.replace('[','').replace(']','')
+                print("2-process :", processed_info_value)
                 if len(processed_info_value) < 1:
                     continue
                 if info_key == 'siblings':
@@ -285,7 +293,10 @@ def incestuousCouple(file):
                     fmc = processed_info_value.split(", ")
                 if info_key == 'love':
                     love = processed_info_value.split(", ")
-
+                print("3-sib:",siblings)
+                print("4-fmc:",fmc)
+                print("5-love:",love)
+                print("")
             #check the relation
             for sib in siblings:
                 if sib in love:
@@ -296,12 +307,25 @@ def incestuousCouple(file):
 
             # print("ligne : ", line)
 
-    with open("list_of_couple.txt","a") as f:
+    with open("list_of_couple.txt","w") as f:
 
         for i in list_of_couple:
             print(i)
             f.write(f"{i}\n")
 
+# #Question 9
+# def graph_of_ancesters(file):
+#     list_of_characters = []
+#     dico_of_ancesters = {}
+    
+#     with open(file, "r") as f:
+        
+#         for line in f:
+#             line = line.strip()#remove escape from start and end if exist
+#             if not line: # ignore empty lines
+#                 continue  
+
+            
 
 
 #==================================#
@@ -339,3 +363,5 @@ def incestuousCouple(file):
 
 #test Q8
 incestuousCouple('characters_list.txt')
+
+#test Q9
