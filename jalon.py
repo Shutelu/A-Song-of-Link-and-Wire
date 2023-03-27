@@ -63,27 +63,33 @@ def svg_dico(dico, file) -> None:
             f.write("Empty dictionary\n")
 
 #Question 3 
-#use the file to create a new dictionary and return it
+#Desc : use a file to create and return a new dictionary
+#Args : file = the file containing the info to create the dico
 def chg_dico(file) -> dict:
+
     dico_to_return = {}
 
+    #open in read mode
     with open(file, 'r') as f:
 
-        #for each line, add it to dico if exist
+        #if the line exist add it to dico_to_return
         for line in f:
 
-            line = line.strip()#remove escape from start and end if exist
+            #remove space from start and end of the line if exist
+            line = line.strip()
 
-            if not line: # ignore empty lines
+            # ignore empty lines
+            if not line: 
                 continue  
 
-            key, value = line.split(':', 1)#split from ':' 1 time and recover in 2 var
+            #split from ':', 1 time and recover in 2 var, key and value are str
+            key, value = line.split(':', 1)
 
-            #replacement
-            value_no_bracket = value.replace("[","").replace("]","").replace("'","").replace("\"","") #remove '[' and ']' and " ' "
-            liste = value_no_bracket.split(", ")
+            #removing the unwanted char
+            processed_value = value.replace("[","").replace("]","").replace("'","").replace("\"","")
+            list_of_value = processed_value.split(", ")
             
-            dico_to_return[key] = liste
+            dico_to_return[key] = list_of_value
 
     return dico_to_return
 
@@ -396,9 +402,9 @@ def graph_of_ancesters(file):
 # )
 
 #test Q3
-# testdico = chg_dico("f2.txt")
-# print(testdico)
-# print(testdico['Aenys_I'])
+# chg_test = chg_dico("chg_test.txt")
+# for chg in chg_test:
+#     print(f"{chg}:{chg_test[chg]}")
 
 #test Q4
 # graph_path()
