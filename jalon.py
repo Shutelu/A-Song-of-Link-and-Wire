@@ -266,25 +266,25 @@ def incestuousCouple(file):
             if not line: # ignore empty lines
                 continue  
 
-            key, value = line.split(':', 1)#split from ':' 1 time and recover in 2 var
+            #obtaining the key and value
+            key, value = line.split(':', 1)
 
             siblings = []
             fmc = [] #[parent], [children]
             love = [] #spouse/lover
 
-            #acquire the info
-            splited_value = value.replace("'","").split("| ")
+            acquire_info = value.replace("'","").split("| ")
             
             #process the info
-            for info in splited_value:
+            for info in acquire_info:
 
-                #obtaining the key and value of info
+                #obtaining the key and value of info (siblings, fmc, love)
                 info_key, info_value = info.split(':',1)
 
-                print("1-info value:", info_value)
-                print("key :",info_key)
+                # print("1-info value:", info_value)
+                # print("key :",info_key)
                 processed_info_value = info_value.replace('[','').replace(']','')
-                print("2-process :", processed_info_value)
+                # print("2-process :", processed_info_value)
                 if len(processed_info_value) < 1:
                     continue
                 if info_key == 'siblings':
@@ -293,10 +293,10 @@ def incestuousCouple(file):
                     fmc = processed_info_value.split(", ")
                 if info_key == 'love':
                     love = processed_info_value.split(", ")
-                print("3-sib:",siblings)
-                print("4-fmc:",fmc)
-                print("5-love:",love)
-                print("")
+                # print("3-sib:",siblings)
+                # print("4-fmc:",fmc)
+                # print("5-love:",love)
+                # print("")
             #check the relation
             for sib in siblings:
                 if sib in love:
@@ -313,18 +313,58 @@ def incestuousCouple(file):
             print(i)
             f.write(f"{i}\n")
 
-# #Question 9
-# def graph_of_ancesters(file):
-#     list_of_characters = []
-#     dico_of_ancesters = {}
-    
-#     with open(file, "r") as f:
-        
-#         for line in f:
-#             line = line.strip()#remove escape from start and end if exist
-#             if not line: # ignore empty lines
-#                 continue  
+#Question 9
+def graph_of_ancesters(file):
 
+    dico_of_ancesters = {}
+    # t=1
+    with open(file, "r") as f:
+        
+        for line in f:
+            line = line.strip()#remove escape from start and end if exist
+            if not line: # ignore empty lines
+                continue  
+
+            #obtaining the key and value
+            key, value = line.split(':', 1)
+            
+            acquire_info = value.replace("'","").split("| ")
+            acquire_fmc = acquire_info[1].replace("fmc:","")
+            list_toprocess_fmc = acquire_fmc.split("], [")
+            
+            str_of_parents = list_toprocess_fmc[0].replace("[[","").replace("]]","") #str
+            list_of_parents = str_of_parents.split(", ")
+
+            list_of_children = list_toprocess_fmc[1].replace("[[","").replace("]]","") #str
+            # print("acc fmc :",acquire_fmc)
+            # print("list parent:",list_of_parents)
+            # print("list child:",list_of_children)
+            for parent in list_of_parents:
+                if parent not in dico_of_ancesters:
+                    if parent == "": continue
+                    dico_of_ancesters[parent] = key
+                    print(f"parent :{parent}\n")
+
+            dico_of_ancesters[key] = list_of_children
+            # print("cleeeee :",key)
+            # print(dico_of_ancesters)
+            # if t> 10: break
+            # t+=1
+        
+
+
+            
+
+    with open("list_of_decendances.txt","w") as f :
+        # t = 1
+        #if the dico exist
+        for key, value in dico_of_ancesters.items():
+            # print(name)
+            f.write(f"{key} -> {value}\n")
+
+            # if t>10: break
+            # t+=1
+            
             
 
 
@@ -362,6 +402,7 @@ def incestuousCouple(file):
 # graph_of_characters()
 
 #test Q8
-incestuousCouple('characters_list.txt')
+# incestuousCouple('characters_list.txt')
 
 #test Q9
+graph_of_ancesters('characters_list.txt')
