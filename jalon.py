@@ -1,3 +1,4 @@
+#Contributors : Changkai WANG 21980438, Liyam AIT OUAKLI 32013066
 from bs4 import BeautifulSoup
 import requests
 
@@ -6,27 +7,32 @@ import requests
 #==================================#
 
 #Question 1:
-#return all the links of the page in a list
+#Desc : return all the links of a page in a list
+#Args : page(str) = page of the wiki to find the links
 def liste_liens(page) -> list:
 
-    adress = requests.get("https://iceandfire.fandom.com/wiki/" + page)
-    soup = BeautifulSoup(adress.text, 'html.parser')
     links_to_return = []
 
-    #search links in the main div
+    #access to the related page and acquire its html source
+    adress = requests.get("https://iceandfire.fandom.com/wiki/" + page)
+    soup = BeautifulSoup(adress.text, 'html.parser')
+    
+    #acquire the div which contains all the userful links
     main_div_to_research = soup.find('div', class_="mw-parser-output")
 
-    #add the link 'a' in our list 
-    for a in main_div_to_research.find_all('a'):#find_all return a list
+    #processing every links from the div and adding to links_to_return
+    for a in main_div_to_research.find_all('a'): # find_all() return a list
 
+        #acquire the class of the link a to process it
         a_class = a.get('class')
         forbidden_class = ['image','image-thumbnail']
 
-        #autorize links without class and exclude links that has a class in forbidden_class
+        #autorize the adding of the links without class and exclude links that has a class in forbidden_class
         if (not a_class) or (len(a_class) > 0 and a_class[0] not in forbidden_class) or (len(a_class) > 1 and a_class[1] not in forbidden_class):
 
-            #exlude links starting with '#' (anchor) and 'https:' or 'http:' or links with ':' (other website redirection)
+            #exlude links starting with '#' (anchor) and 'https:' or 'http:' or links with ':' (other website redirection or categories)
             if (not a.get('href').startswith('#') and not ":" in a.get('href')):
+
                 link_without_wiki = a.get('href').replace("/wiki/",'')#remove the '/wiki/' before the link
                 links_to_return.append(link_without_wiki)
 
@@ -37,14 +43,22 @@ def liste_liens(page) -> list:
 #==================================#
 
 #Question 2:
-#save a dictionary into a file
+#Desc : write the information of a dictionary into a file
+#Args : dico = the dictonary, file = the file to write the information
 def svg_dico(dico, file) -> None:
 
-    with open(file, "a") as f:#auto close syntax, create if not exist or append 
+    #open with auto close syntax, and append to the end of the file
+    with open(file, "a") as f:
+
+        dico_len = len(dico)
 
         #if the dico exist
-        if len(dico) > 0:
-            f.write(f"{list(dico.keys())[0]}:{list(dico.values())[0]}\n")#take index 0 of key/value, because it only exist on index 0
+        if dico_len > 0:
+
+            for i in range(0,dico_len):
+
+                #f string formatting to write into the file
+                f.write(f"{list(dico.keys())[i]}:{list(dico.values())[i]}\n")
         else:
             f.write("Empty dictionary\n")
 
@@ -373,12 +387,13 @@ def graph_of_ancesters(file):
 #==================================#
 
 #test Q1
-# print(liste_liens("Petyr_Baelish")) #test
+# print("Links of the page 'Petyr_Baelish' :\n",liste_liens("Petyr_Baelish")) 
 
 # test Q2
-# svg_dico({
-#     "Petyr_Baelish": liste_liens("Petyr_Baelish")
-# },"f1.txt")
+# svg_dico(
+#     {"Petyr_Baelish": liste_liens("Petyr_Baelish")},
+#     "svg_test.txt"
+# )
 
 #test Q3
 # testdico = chg_dico("f2.txt")
@@ -405,4 +420,4 @@ def graph_of_ancesters(file):
 # incestuousCouple('characters_list.txt')
 
 #test Q9
-graph_of_ancesters('characters_list.txt')
+# graph_of_ancesters('characters_list.txt')
