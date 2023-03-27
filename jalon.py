@@ -300,119 +300,111 @@ def getRelationAsList(soup, source:list) -> list:
     return list_to_return
 
 #Question 8
-#We print the list of incestuous couples + list_of_couple file
+#Desc : print the list of incestuous couples in stdout and write into list_of_couple.txt
+#Args : file = file containing the list of characters of the wiki
 def incestuousCouple(file):
+
     list_of_couple = []
 
     with open(file, 'r') as f:
 
         for line in f:
 
-            line = line.strip()#remove escape from start and end if exist
-            if not line: # ignore empty lines
+            line = line.strip()
+            if not line:
                 continue  
 
-            #obtaining the key and value
+            #obtaining the key=character and value=all relations
             key, value = line.split(':', 1)
 
             siblings = []
             fmc = [] #[parent], [children]
             love = [] #spouse/lover
 
-            acquire_info = value.replace("'","").split("| ")
+            acquire_list_info = value.replace("'","").split("| ")
             
             #process the info
-            for info in acquire_info:
+            for info in acquire_list_info:
 
                 #obtaining the key and value of info (siblings, fmc, love)
-                info_key, info_value = info.split(':',1)
+                relation_key, relations = info.split(':',1)
 
-                # print("1-info value:", info_value)
-                # print("key :",info_key)
-                processed_info_value = info_value.replace('[','').replace(']','')
-                # print("2-process :", processed_info_value)
-                if len(processed_info_value) < 1:
+                processed_relations = relations.replace('[','').replace(']','')
+
+                if len(processed_relations) < 1:
                     continue
-                if info_key == 'siblings':
-                    siblings = processed_info_value.split(", ")
-                if info_key == 'fmc':
-                    fmc = processed_info_value.split(", ")
-                if info_key == 'love':
-                    love = processed_info_value.split(", ")
-                # print("3-sib:",siblings)
-                # print("4-fmc:",fmc)
-                # print("5-love:",love)
-                # print("")
+                if relation_key == 'siblings':
+                    siblings = processed_relations.split(", ")
+                if relation_key == 'fmc':
+                    fmc = processed_relations.split(", ")
+                if relation_key == 'love':
+                    love = processed_relations.split(", ")
+
             #check the relation
             for sib in siblings:
                 if sib in love:
                     list_of_couple.append((key,sib))
+
             for f in fmc:
                 if f in love:
                     list_of_couple.append((key,f))
 
-            # print("ligne : ", line)
-
-    with open("list_of_couple.txt","w") as f:
+    #write into file
+    with open("list_of_incestuous_couple.txt","w") as f:
 
         for i in list_of_couple:
             print(i)
             f.write(f"{i}\n")
 
 #Question 9
-def graph_of_ancesters(file):
+#Desc : return the graph of descendences in form of 'parent -> children'
+#Args : file = file containing the list of characters of the wiki
+def graph_of_descendences(file):
 
     dico_of_ancesters = {}
-    # t=1
+
     with open(file, "r") as f:
         
         for line in f:
-            line = line.strip()#remove escape from start and end if exist
-            if not line: # ignore empty lines
+            line = line.strip()
+            if not line:
                 continue  
 
-            #obtaining the key and value
+            #obtaining the key=character and value=all relations
             key, value = line.split(':', 1)
-            
-            acquire_info = value.replace("'","").split("| ")
-            acquire_fmc = acquire_info[1].replace("fmc:","")
+
+            #getting siblings, fmc, love
+            acquire_relations = value.replace("'","").split("| ")
+
+            #only acquire the fmc
+            acquire_fmc = acquire_relations[1].replace("fmc:","")
+
+            #spliting between parents and children
             list_toprocess_fmc = acquire_fmc.split("], [")
             
+            #list of parent
             str_of_parents = list_toprocess_fmc[0].replace("[[","").replace("]]","") #str
             list_of_parents = str_of_parents.split(", ")
 
+            #list of children
             list_of_children = list_toprocess_fmc[1].replace("[[","").replace("]]","") #str
-            # print("acc fmc :",acquire_fmc)
-            # print("list parent:",list_of_parents)
-            # print("list child:",list_of_children)
+
+            #for parent
             for parent in list_of_parents:
                 if parent not in dico_of_ancesters:
-                    if parent == "": continue
+                    if parent == "": continue # for the parent = "", otherwise there will be parent with no name
                     dico_of_ancesters[parent] = key
-                    print(f"parent :{parent}\n")
 
+            #for children
             dico_of_ancesters[key] = list_of_children
-            # print("cleeeee :",key)
-            # print(dico_of_ancesters)
-            # if t> 10: break
-            # t+=1
-        
-
-
-            
-
-    with open("list_of_decendances.txt","w") as f :
-        # t = 1
+         
+    #write the descendances into a file
+    with open("list_of_descendances.txt","w") as f :
         #if the dico exist
         for key, value in dico_of_ancesters.items():
-            # print(name)
+            # parent -> children
             f.write(f"{key} -> {value}\n")
-
-            # if t>10: break
-            # t+=1
             
-            
-
 
 #==================================#
 #===============TEST===============#
@@ -452,4 +444,4 @@ def graph_of_ancesters(file):
 # incestuousCouple('characters_list.txt')
 
 #test Q9
-# graph_of_ancesters('characters_list.txt')
+# graph_of_descendences('characters_list.txt')
