@@ -162,7 +162,8 @@ def plus_court_chemin(graph, source, target) -> list:
     return None # there is no path 
 
 #Question 6
-#find the minimal weight path
+#Desc : find the minimal weight path
+#Args : graph = the dictonary to visite, source = starting point, target = target page to search
 def pcc_voyelles(graph, source, target) -> list:
 
     nodes_to_visite = [source]
@@ -170,12 +171,13 @@ def pcc_voyelles(graph, source, target) -> list:
     parent = {source: None}
     min_path_to_return = []
 
-    #we stop until nodes_to_visite is empty to find the shortest path
+    #we stop until nodes_to_visite is empty to find the shortest path (optimal weight)
     #this 'while' loop will setup the optimal way to find the target 
     while nodes_to_visite:
         node = nodes_to_visite.pop()
 
-        if (len(graph.get(node, [])) == 0) or (node == target): # empty node or target node we can continue
+        # if empty node or target node we can 'continue'
+        if (len(graph.get(node, [])) == 0) or (node == target): 
             continue
         
         #define the weight of each nodes
@@ -185,14 +187,15 @@ def pcc_voyelles(graph, source, target) -> list:
 
             #if the neighbour already has a weight we can compare
             if neighbour in nodes_weight:
-                # cost > n
+                # cost > n (already got the smallest weight)
                 if cost > nodes_weight[neighbour]:
                     continue
                 
-            # cost < n or not in distances
-            if neighbour not in nodes_to_visite:
+            # cost < n (change to a smaller weight) or not in nodes_weight
+            if neighbour not in nodes_to_visite: #to not parcours again (adding time complexity)
                 nodes_to_visite.append(neighbour) #add to the parcours
-            nodes_weight[neighbour] = cost # add the distance
+
+            nodes_weight[neighbour] = cost # add the weight
             parent[neighbour] = node
 
     #set our path from source to target with the min weight
@@ -203,7 +206,9 @@ def pcc_voyelles(graph, source, target) -> list:
   
     return min_path_to_return
 
-#Q6 private method : return the number of vowels of n
+#Q6
+#Desc : return the number of vowels of n
+#Args : n = a string
 def nb_voyelles(n) -> int:
     nb = 0
     for v in n:
@@ -436,9 +441,11 @@ def graph_of_descendences(file):
 # print(chemin)
 
 #test Q6
-# dico = chg_dico("f1.txt")
-# path = pcc_voyelles(dico, "Dorne", "Rhaego")
+# pcc_v_test = chg_dico("wiki_representation.txt")
+# path = pcc_voyelles(pcc_v_test, "Dorne", "Rhaego")
+# path2 = pcc_voyelles(pcc_v_test, "Dorne", "Bastardy")
 # print(path)
+# print(path2)
 
 #test Q7
 # graph_of_characters()
