@@ -126,7 +126,8 @@ def graph_path() -> None:
 #=============================================#
 
 #Question 5 : 
-#find the shortest way from A to B, graph = dictonary
+#Desc : find the shortest way from A to B, graph = dictonary
+#Args : graph = the dictonary to visite, source = starting point, target = target page to search
 def plus_court_chemin(graph, source, target) -> list:
 
     nodes_to_visite = [source]
@@ -135,18 +136,20 @@ def plus_court_chemin(graph, source, target) -> list:
     while nodes_to_visite:
         node = nodes_to_visite.pop(0) # get the first element 
 
-        # if we find the 'end' node
+        # if we find the 'target' node
         if node == target: 
-            chemin = []
+            path = []
 
-            while node: # stop until node start which has a parent = None
-                chemin.append(node)
+            #stop until node start which has a parent = None
+            while node: 
+                path.append(node)
                 node = parent[node]
 
-            chemin.reverse() # put 'chemin' in right order
-            return chemin
+            path.reverse() # put 'path' in right order
+            return path
 
-        if len(graph.get(node, [])) == 0: # if empty node, the links doesn't have any values
+        # if empty node, the links doesn't have any values
+        if len(graph.get(node, [])) == 0: 
             continue
 
         #search the values from the key 'node'
@@ -159,7 +162,7 @@ def plus_court_chemin(graph, source, target) -> list:
     return None # there is no path 
 
 #Question 6
-#cherche le chemin de pois minimal
+#find the minimal weight path
 def pcc_voyelles(graph, source, target) -> list:
 
     nodes_to_visite = [source]
@@ -428,8 +431,8 @@ def graph_of_descendences(file):
 # graph_path()
 
 #test Q5
-# test = chg_dico("f1.txt")
-# chemin = plus_court_chemin(test,"Dorne", "Rhaego")
+# pcc_test = chg_dico("wiki_representation.txt")
+# chemin = plus_court_chemin(pcc_test,"Dorne", "Rhaego")
 # print(chemin)
 
 #test Q6
